@@ -116,7 +116,7 @@ async function main()
 	LOG(args);
 	let tracein=0;
 	tracein=parseInt(args[0]);
-	let lines=fs.readFileSync(args[0],'utf-8').split("\n");
+	let lines=fs.readFileSync(args[1],'utf-8').split("\n");
 	for(let i=0;i<lines.length;i++){
 		let linestr=lines[i];
 		if(linestr.indexOf("www.aliyundrive.com/s/")!=-1){
@@ -130,7 +130,7 @@ async function main()
 		}
 		
 	}
-	writefsync(args[1]||"outinfo.json",JSON.stringify(arr_files));
+	writefsync(args[2]||"outinfo.json",JSON.stringify(arr_files));
 }
 
 main()
