@@ -31,7 +31,8 @@ async function apireq(uri,msg,hd=null)
 	}
 	while(true){
 		try{
-			LOG(uri);
+			//LOG(uri);
+			await sleep(1000);
 			//LOG(msg);
 			return await axios.post(uri,msg,{headers:hds});
 		}
@@ -41,9 +42,12 @@ async function apireq(uri,msg,hd=null)
 			}
 			else if(err.response.status===429){
 				let waitms=Math.random()*3000+15*1000;
-				LOG(`请求频繁被发现了，机智的我${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
+				LOG(`请求频繁被发现了，机智的你${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
 				waitcount++;
 				await sleep(waitms);
+			}
+			else{
+				sLOG(err.response.status);
 			}
 		}
 	}
@@ -143,7 +147,7 @@ async function main()
 		
 	}
 	if(waitcount>10){
-		LOG(`就这么会躲起来${waitcount}次，我太难了`);
+		LOG(`就这么会躲起来${waitcount}次，这太难了`);
 	}
 	writefsync(args[2]||"outinfo.json",JSON.stringify(arr_files));
 }
