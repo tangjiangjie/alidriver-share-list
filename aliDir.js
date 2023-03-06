@@ -31,6 +31,7 @@ async function apireq(uri,msg,hd=null)
 	}
 	while(true){
 		try{
+			LOG(uri);
 			return await axios.post(uri,msg,{headers:hds});
 		}
 		catch(err){
