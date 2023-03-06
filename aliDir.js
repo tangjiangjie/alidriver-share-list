@@ -11,7 +11,7 @@ function LOG(msg){
 function sleep(ms){
     return new Promise((r,j)=>{setTimeout(()=>{r();}, ms)});
 }
-
+let waitcount=0;
 async function apireq(uri,msg,hd=null)
 {
 	let hds={
@@ -32,12 +32,17 @@ async function apireq(uri,msg,hd=null)
 	while(true){
 		try{
 			LOG(uri);
+			//LOG(msg);
 			return await axios.post(uri,msg,{headers:hds});
 		}
 		catch(err){
-			if(err.response.status===429){
+			if(err.response.status===400){
+				return {wokaocode:400};
+			}
+			else if(err.response.status===429){
 				let waitms=Math.random()*3000+15*1000;
-				LOG(`请求频繁被发现了，机智的我要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
+				LOG(`请求频繁被发现了，机智的我${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
+				waitcount++;
 				await sleep(waitms);
 			}
 		}
@@ -65,6 +70,7 @@ var arr_files=[];
 async function listall(ite,tracein,fileid="root",path="")
 {
 	ite["share_token"]=await get_share_token(ite);
+	if(ite["share_token"]=="") return;
 	if(path==""){
 		path=ite.share_id;
 	}
@@ -85,7 +91,7 @@ async function listall(ite,tracein,fileid="root",path="")
 				type:o.type,
 			});
 			if(o.type=="folder"&&tracein>0){
-				await listall(o,o.file_id,npath,tracein-1);
+				await listall(o,tracein-1,o.file_id,npath);
 			}
 		}
 		
@@ -101,7 +107,12 @@ async function get_share_token(ite)
 	if(!map_share_token.hasOwnProperty(pshare_id)){
 		LOG(ite);
 		let res=await apireq(`https://api.aliyundrive.com/v2/share_link/get_share_token`,{"share_id":ite.share_id,"share_pwd":ite.share_pwd});
-		map_share_token[pshare_id]=res.data.share_token;
+		if(res.hasOwnProperty("wokaocode")){
+			map_share_token[pshare_id]="";
+		}
+		else{
+			map_share_token[pshare_id]=res.data.share_token;
+		}
 	}
 	return map_share_token[pshare_id];
 }
@@ -131,7 +142,16 @@ async function main()
 		}
 		
 	}
+	if(waitcount>10){
+		LOG(`就这么会躲起来${waitcount}次，我太难了`);
+	}
 	writefsync(args[2]||"outinfo.json",JSON.stringify(arr_files));
 }
+//环境建立
+//npm install axios
 
+//命令行
+//node aliDir.js 目录深度0表示只列出第一级别999 应该能列出所有了  输入文件input.txt  输出文件outinfo.json
+//例如
+//node aliDir.js 2 input.txt outinfo.json
 main()
