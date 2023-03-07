@@ -7,7 +7,7 @@ npm install axios
 
 #### 命令行
 node aliDir.js 目录深度0表示只列出第一级别999 应该能列出所有了  输入文件input.txt  输出文件outinfo.json<br>
-例如
+#### 刷新三层文件夹
 node aliDir.js 2 input.txt outinfo.json
 
 #### 刷新顶层文件夹
