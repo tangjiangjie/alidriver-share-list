@@ -54,12 +54,12 @@ async function apireq(uri,msg,hd=null)
 			}
 			else if(err.response.status===429){
 				let waitms=Math.random()*3000+15*1000;
-				LOG(`请求频繁被发现了，机智的你${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
+				LOG(`请求频繁被发现了，机智的我${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
 				waitcount++;
 				await sleep(waitms);
 			}
 			else{
-				sLOG(err.response.status);
+				LOG(err.response.status);
 			}
 		}
 	}
@@ -81,7 +81,7 @@ async function listdir(ite,fileid,marker){
 			},{"x-share-token":ite.share_token});
 	return res.data;
 }
-var arr_files=[];
+var map_files={};
 
 async function listall(ite,tracein,fileid="root",path="")
 {
@@ -99,13 +99,12 @@ async function listall(ite,tracein,fileid="root",path="")
 			o=objs.items[i];
 			let npath=`${path}/${o.name}`;
 			LOG(npath);
-			arr_files.push({
-				wokaoidx:npath,
+			map_files[npath]={
 				share_id:o.share_id,
 				name:o.name,
 				parent_file_id:o.parent_file_id,
 				type:o.type,
-			});
+			};
 			if(o.type=="folder"&&tracein>0){
 				await listall(o,tracein-1,o.file_id,npath);
 			}
@@ -159,8 +158,10 @@ async function main()
 		
 	}
 	if(waitcount>10){
-		LOG(`就这么会躲起来${waitcount}次，这太难了`);
+		LOG(`就这么会躲起来${waitcount}次，我太难了`);
 	}
-	writefsync(args[2]||"outinfo.json",JSON.stringify(arr_files));
+	writefsync(args[2]||"outinfo.json",JSON.stringify(map_files));
+	writefsync(args[3]||"index.json",Object.keys(map_files).join("\n\r"));
 }
+
 main()
