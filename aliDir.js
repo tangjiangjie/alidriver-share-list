@@ -52,10 +52,14 @@ async function apireq(uri,msg,hd=null)
 			if(err.response.status===400){
 				return {wokaocode:400};
 			}
+			else if(err.response.status===401){
+				return {wokaocode:401};
+			}
 			else if(err.response.status===429){
 				let waitms=Math.random()*3000+15*1000;
 				LOG(`请求频繁被发现了，机智的我${waitcount>0?"又":""}要躲起来观察一会(等待${parseInt(waitms/1000)}秒再搞事情)`);
 				waitcount++;
+				savefile();
 				await sleep(waitms);
 			}
 			else{
@@ -160,8 +164,13 @@ async function main()
 	if(waitcount>10){
 		LOG(`就这么会躲起来${waitcount}次，我太难了`);
 	}
+	savefile();
+}
+function savefile()
+{
 	writefsync(args[2]||"outinfo.json",JSON.stringify(map_files));
 	writefsync(args[3]||"index.json",Object.keys(map_files).join("\n\r"));
+	
 }
 
 main()
