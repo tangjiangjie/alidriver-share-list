@@ -26,7 +26,7 @@ async function apirefreshToken()
 	let d={
 		ClientID:"",
 		ClientSecret:"",
-		RefreshToken:"这里放aliopen的RefreshToken",
+		RefreshToken:"这里放alist官方网站获取的aliopen的RefreshToken",
 	};
 	let res=await axios.post("https://api.nn.ci/alist/ali_open/token",{
 			"client_id":     d.ClientID,
@@ -102,7 +102,8 @@ async function main()
 	 d.default_drive_id=dinfo.default_drive_id;
 	// LOG(d);
 	 let rx=await listall(d,"你自己的目录id");
-	 listall(d,"root");
+	 
+	 //listall(d,"root");
 	 LOG(rx);
 	
 	
