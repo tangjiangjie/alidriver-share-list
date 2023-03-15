@@ -75,7 +75,7 @@ async function listdir(ite,fileid,marker){
 			{
 			"share_id": ite.share_id,
 			"parent_file_id": fileid,
-			"limit": 20,
+			"limit": 180,
 			//"image_thumbnail_process": "image/resize,w_256/format,jpeg",
 			//"image_url_process": "image/resize,w_1920/format,jpeg/interlace,1",
 			//"video_thumbnail_process": "video/snapshot,t_1000,f_jpg,ar_auto,w_256",
@@ -140,7 +140,8 @@ async function get_share_by_anonymous(pshare_id)
 	let res=await apireq(`https://api.aliyundrive.com/adrive/v3/share_link/get_share_by_anonymous?${pshare_id}`,{share_id: pshare_id});
 	return res.data;
 }
-
+const date = require('date-and-time')
+var pre=date.format(new Date(),'YYYY-MM-DD');
 
 async function main()
 {
@@ -168,9 +169,10 @@ async function main()
 }
 function savefile()
 {
-	writefsync(args[2]||"outinfo.json",JSON.stringify(map_files));
-	writefsync(args[3]||"index.json",Object.keys(map_files).join("\n\r"));
+	writefsync(args[2]||`${pre}.outinfo.json`,JSON.stringify(map_files));
+	writefsync(args[3]||`${pre}.index.txt`,Object.keys(map_files).join("\n\r"));
 	
 }
+
 
 main()
