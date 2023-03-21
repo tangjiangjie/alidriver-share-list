@@ -147,8 +147,8 @@ async function main()
 {
 	LOG(args);
 	let tracein=0;
-	tracein=parseInt(args[0]);
-	let lines=fs.readFileSync(args[1],'utf-8').split("\n");
+	tracein=parseInt(args[0]||3);
+	let lines=fs.readFileSync(args[1]||"input.txt",'utf-8').split("\n");
 	for(let i=0;i<lines.length;i++){
 		let linestr=lines[i];
 		if(linestr.indexOf("www.aliyundrive.com/s/")!=-1){
